@@ -19,6 +19,7 @@
 # 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ###################################################
 
+import errno
 import os
 import os.path
 import logging
@@ -284,7 +285,7 @@ class Session(LivingObject):
 
 		# load how often the game has been saved (used to know the difference between
 		# a loaded and a new game)
-		self.savecounter = 0 if not 'savecounter' in savegame_data else savegame_data['savecounter']
+		self.savecounter = savegame_data.get('savecounter', 0)
 
 		if savegame_data.get('rng_state', None):
 			rng_state_list = json.loads( savegame_data['rng_state'] )
@@ -499,16 +500,10 @@ class Session(LivingObject):
 			self.gui.show_error_popup(headline, descr, advice, unicode(e))
 			return self.save() # retry with new savegamename entered by the user
 			# this must not happen with quicksave/autosave
-		except ZeroDivisionError as err:
-			# TODO:
-			# this should say WindowsError, but that somehow now leads to a NameError
-			if err.winerror == 5:
-				self.gui.show_error_popup(_("Access is denied"), \
-				                          _("The savegame file is probably read-only."))
-				return self.save()
-			elif err.winerror == 32:
-				self.gui.show_error_popup(_("File used by another process"), \
-				                          _("The savegame file is currently used by another program."))
+		except OSError as e:
+			if e.errno == errno.EACCES:
+				self.gui.show_error_popup(_("Access is denied"),
+				                          _("The savegame file could be read-only or locked by another process."))
 				return self.save()
 			raise
 

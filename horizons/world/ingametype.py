@@ -68,20 +68,25 @@ class IngameType(type):
 	def __init__(self, id, yaml_data):
 		self.id = id
 		# self._name is always some default name
-		# self._level_specifc_names is optional and contains a dict like this: { level_id : name }
-		# (with entries for all increments in which it is active)
+		# self._level_specific_names is optional and contains a dict like this: { level_id : name }
+		# (with entries for all tiers in which it is active)
 		name_data = yaml_data['name']
+		start_tier = yaml_data.get('settler_level', TIER.NATURE) # first tier where object is available
 		if isinstance(name_data, dict): # { level_id : name }
-			# fill up dict (fall down to highest class which has an name
-			name = None
+			# fill up dict (fall down to highest tier which has a name specified
 			self._level_specific_names = {}
-			for lvl in xrange(min(name_data), TIER.CURRENT_MAX + 1):
-				if lvl in name_data:
-					name = _( self._strip_translation_marks( name_data[lvl] ) )
-				assert name is not None, "name attribute is wrong: "+str(yaml_data['name'])
-				self._level_specific_names[lvl] = name
-			_name = name_data[ min(name_data) ] # use first as default
-			self._name = _( self._strip_translation_marks( _name ) )
+			for lvl in xrange(start_tier, TIER.CURRENT_MAX + 1):
+				name = name_data.get(lvl)
+				if name is None:
+					name = self._level_specific_names.get(lvl - 1)
+					assert name is not None, "Error in object file:\n" + \
+					"'name' attribute needs to at least describe tier %s. " + \
+					"Found:\n%s" % (name_data, start_tier)
+					self._level_specific_names[lvl] = name
+				else:
+					self._level_specific_names[lvl] = _(self._strip_translation_marks(name))
+
+			self._name = self._level_specific_names[start_tier] # default name: lowest available
 		else: # assume just one string
 			self._name = _( self._strip_translation_marks( name_data ) )
 		self.radius = yaml_data['radius']
@@ -93,7 +98,7 @@ class IngameType(type):
 		self._parse_component_templates()
 
 		# TODO: move this to the producer component as soon as there is support for class attributes there
-		self.additional_provided_resources = yaml_data['additional_provided_resources'] if 'additional_provided_resources' in yaml_data else []
+		self.additional_provided_resources = yaml_data.get('additional_provided_resources', [])
 
 		"""TUTORIAL: Now you know the basic attributes each type has. Further attributes
 		specific to buildings and units can be found in horizons/world/{buildings/units}/__init__.py
@@ -123,7 +128,7 @@ class IngameType(type):
 
 	def _parse_component_templates(self):
 		"""Prepares misc data in self.component_templates"""
-		producer = [ comp for comp in self.component_templates if \
+		producer = [ comp for comp in self.component_templates if
 		             isinstance(comp, dict) and comp.iterkeys().next() == 'ProducerComponent' ]
 		if producer:
 			# we want to support string production line ids, the code should still only see integers
@@ -146,7 +151,7 @@ class IngameType(type):
 					# safety, we use ints.
 					new_key = int( new_key % 2**31 ) # this ensures it's an integer on all reasonable platforms
 				if new_key in new_data:
-					raise Exception("Error: production line id conflict. Please change \"%s\" to anything else for \"%s\"" % (old_key, self.name))
+					raise Exception('Error: production line id conflict. Please change "%s" to anything else for "%s"' % (old_key, self.name))
 				new_data[new_key] = v
 
 			producer_data['productionlines'] = new_data

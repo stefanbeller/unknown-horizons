@@ -275,8 +275,8 @@ class IngameGui(LivingObject):
 		players.add(self.session.world.pirate)
 		players.discard(self.session.world.player)
 		players.discard(None) # e.g. when the pirate is disabled
-		if len(players) == 0: # this dialog is pretty useless in this case
-			self.main_gui.show_popup(_("No diplomacy possible"), \
+		if not players: # this dialog is pretty useless in this case
+			self.main_gui.show_popup(_("No diplomacy possible"),
 			                         _("Cannot do diplomacy as there are no other players."))
 			return
 
@@ -310,7 +310,7 @@ class IngameGui(LivingObject):
 			tab = TabWidget(self, tabs=[ TabInterface(widget="buildtab_no_settlement.xml") ])
 		else:
 			btabs = BuildTab.create_tabs(self.session, self._build)
-			tab = TabWidget(self, tabs=btabs, name="build_menu_tab_widget", \
+			tab = TabWidget(self, tabs=btabs, name="build_menu_tab_widget",
 											active_tab=BuildTab.last_active_build_tab)
 		self.show_menu(tab)
 
@@ -332,8 +332,6 @@ class IngameGui(LivingObject):
 
 	def toggle_road_tool(self):
 		if not isinstance(self.session.cursor, BuildingTool) or self.session.cursor._class.id != BUILDINGS.TRAIL:
-			if isinstance(self.session.cursor, BuildingTool):
-				print self.session.cursor._class.id, BUILDINGS.TRAIL
 			self._build(BUILDINGS.TRAIL)
 		else:
 			self.session.set_cursor()
@@ -430,7 +428,7 @@ class IngameGui(LivingObject):
 		"""
 		new_name = self.widgets['change_name'].collectData('new_name')
 		self.widgets['change_name'].findChild(name='new_name').text = u''
-		if not (len(new_name) == 0 or new_name.isspace()):
+		if not new_name or new_name.isspace():
 			# different namedcomponent classes share the name
 			RenameObject(instance.get_component_by_name(NamedComponent.NAME), new_name).execute(self.session)
 		self._hide_change_name_dialog()

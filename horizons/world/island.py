@@ -187,17 +187,11 @@ class Island(BuildingOwner, WorldObject):
 		"""Returns whether a tile is on island or not.
 		@param point: Point contains position of the tile.
 		@return: tile instance if tile is on island, else None."""
-		try:
-			return self.ground_map[(point.x, point.y)]
-		except KeyError:
-			return None
+		return self.ground_map.get((point.x, point.y))
 
 	def get_tile_tuple(self, tup):
 		"""Overloaded get_tile, takes a tuple as argument"""
-		try:
-			return self.ground_map[tup]
-		except KeyError:
-			return None
+		return self.ground_map.get(tup)
 
 	def get_tiles_tuple(self, tuples):
 		"""Same as get_tile, but takes a list of tuples.
@@ -216,11 +210,11 @@ class Island(BuildingOwner, WorldObject):
 		settlement.initialize()
 		self.add_existing_settlement(position, radius, settlement, load)
 		# TODO: Move this to command, this message should not appear while loading
-		self.session.ingame_gui.message_widget.add(position.center().x, \
-		                                           position.center().y, \
-		                                           'NEW_SETTLEMENT', \
-		                                           {'player':player.name}, \
-		                                           self.session.world.player == player)
+		self.session.ingame_gui.message_widget.add(string_id='NEW_SETTLEMENT',
+		                                           x=position.center().x,
+		                                           y=position.center().y,
+		                                           message_dict={'player':player.name},
+		                                           sound_file=self.session.world.player == player)
 
 		NewSettlement.broadcast(self, settlement)
 
@@ -329,7 +323,7 @@ class Island(BuildingOwner, WorldObject):
 			return self.building_indexers[BUILDINGS.TREE]
 		return None
 
-	def get_surrounding_tiles(self, where, radius = 1):
+	def get_surrounding_tiles(self, where, radius=1):
 		"""Returns tiles around point with specified radius.
 		@param point: instance of Point, or object with get_surrounding()"""
 		if hasattr(where, "get_surrounding"):
@@ -359,7 +353,7 @@ class Island(BuildingOwner, WorldObject):
 	def check_wild_animal_population(self):
 		"""Creates a wild animal if they died out."""
 		self.log.debug("Checking wild animal population: %s", len(self.wild_animals))
-		if len(self.wild_animals) == 0:
+		if not self.wild_animals:
 			# find a tree where we can place it
 			for building in self.buildings:
 				if building.id == BUILDINGS.TREE:

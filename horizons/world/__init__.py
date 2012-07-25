@@ -238,7 +238,7 @@ class World(BuildingOwner, WorldObject):
 			data = {'player1' : player1, 'player2' : player2}
 
 			self.session.ingame_gui.message_widget.add(
-			  None, None, 'DIPLOMACY_STATUS_'+old_state.upper()+"_"+new_state.upper(), data)
+			  x=None, y=None, string_id='DIPLOMACY_STATUS_'+old_state.upper()+"_"+new_state.upper(), message_dict=data)
 
 		self.diplomacy.add_diplomacy_status_changed_listener(notify_change)
 
@@ -310,7 +310,7 @@ class World(BuildingOwner, WorldObject):
 			player = None
 			# check if player is an ai
 			ai_data = self.session.db("SELECT class_package, class_name FROM ai WHERE client_id = ?", client_id)
-			if len(ai_data) > 0:
+			if ai_data:
 				class_package, class_name = ai_data[0]
 				# import ai class and call load on it
 				module = __import__('horizons.ai.'+class_package, fromlist=[str(class_name)])
@@ -322,7 +322,7 @@ class World(BuildingOwner, WorldObject):
 
 			if client_id == horizons.main.fife.get_uh_setting("ClientID"):
 				self.player = player
-			elif client_id is not None and len(ai_data) == 0:
+			elif client_id is not None and not ai_data:
 				# possible human player candidate with different client id
 				human_players.append(player)
 		self.owner_highlight_active = False
@@ -432,7 +432,7 @@ class World(BuildingOwner, WorldObject):
 			self.pirate = Pirate(self.session, 99998, "Captain Blackbeard", Color())
 
 		# Fire a message for new world creation
-		self.session.ingame_gui.message_widget.add(None, None, 'NEW_WORLD')
+		self.session.ingame_gui.message_widget.add(x=None, y=None, string_id='NEW_WORLD')
 		assert ret_coords is not None, "Return coords are None. No players loaded?"
 		return ret_coords
 
@@ -557,7 +557,7 @@ class World(BuildingOwner, WorldObject):
 		for island in islands:
 			for settlement in island.settlements:
 				warehouse = settlement.warehouse
-				if (radius is None or position is None or \
+				if (radius is None or position is None or
 				    warehouse.position.distance(position) <= radius) and \
 				   (owner is None or warehouse.owner == owner or
 				    (include_tradeable and self.diplomacy.can_trade(warehouse.owner, owner))):

@@ -99,7 +99,7 @@ class StatusIconManager(object):
 			for registered_icon in self.icons[icon_instance][:]:
 				if message.icon_class is registered_icon.__class__:
 					self.icons[icon_instance].remove(registered_icon)
-					if len(self.icons[icon_instance]) == 0:
+					if not self.icons[icon_instance]:
 						# No icon left for this building, remove it
 						self.renderer.removeAll(self.get_status_string(icon_instance))
 						del self.icons[icon_instance]
@@ -153,9 +153,9 @@ class StatusIconManager(object):
 		# only those that have icons
 		instances = (i for i in instances if i in self.icons)
 		# and belong to the player
-		instances = [i for i in instances if \
-		             hasattr(i, "owner" ) and \
-		             hasattr(i.owner, "is_local_player") and \
+		instances = [i for i in instances if
+		             hasattr(i, "owner" ) and
+		             hasattr(i.owner, "is_local_player") and
 		             i.owner.is_local_player]
 
 		if not instances:

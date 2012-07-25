@@ -68,7 +68,7 @@ class VERSION:
 	#RELEASE_VERSION = u'2012.1'
 
 	## +=1 this if you changed the savegame "api"
-	SAVEGAMEREVISION = 60
+	SAVEGAMEREVISION = 61
 
 	@staticmethod
 	def string():
@@ -300,7 +300,7 @@ class GROUND:
 
 class GAME_SPEED:
 	TICKS_PER_SECOND = 16
-	TICK_RATES = [ int(i*16) for i in (0.5, 1, 2, 3, 4, 6, 8, 11, 20) ]
+	TICK_RATES = [ int(i * TICKS_PER_SECOND) for i in (0.5, 1, 2, 3, 4, 6, 8, 11, 20) ]
 
 class COLORS:
 	BLACK = 9
@@ -466,8 +466,8 @@ class PATHS:
 
 	CONFIG_TEMPLATE_FILE = os.path.join("content", "settings-template.xml")
 
-	DB_FILES = tuple(os.path.join("content", i) for i in \
-	                 ("game.sql", "balance.sql"))
+	DB_FILES = tuple(os.path.join("content", i) for i in
+	                 ("game.sql", "balance.sql", "names.sql"))
 
 	if GFX.USE_ATLASES:
 		DB_FILES = DB_FILES + (os.path.join("content", "atlas.sql"), )

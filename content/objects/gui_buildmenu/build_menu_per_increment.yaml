@@ -58,14 +58,15 @@ tab3:
   - _ Fields
   - BUILDINGS.TOBACCO_FIELD
   - BUILDINGS.CATTLE_RUN
-  - BUILDINGS.PIGSTY
+  - BUILDINGS.HERBARY
   - BUILDINGS.SPICE_FIELD
 -
   - _ Services
   - BUILDINGS.TAVERN
-  - # empty slot
+  - BUILDINGS.DOCTOR
   - _ Military
   - BUILDINGS.BARRACKS
+  - # empty slot
 
 
 tab4:
