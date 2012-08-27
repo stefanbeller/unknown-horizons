@@ -192,7 +192,7 @@ class World(BuildingOwner, WorldObject):
 			if self.trader:
 				self.trader.load_ship_states(savegame_db)
 			if self.pirate:
-				self.pirate.load_ship_states(savegame_db)
+				self.pirate.finish_loading(savegame_db)
 
 			# load the AI stuff only when we have AI players
 			if any(isinstance(player, AIPlayer) for player in self.players):
@@ -355,7 +355,7 @@ class World(BuildingOwner, WorldObject):
 		moves = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 		n = 0
-		self.water_body = dict(self.water)
+		self.water_body = dict.fromkeys(self.water)
 		for coords, num in self.water_body.iteritems():
 			if num is not None:
 				continue

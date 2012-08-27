@@ -68,7 +68,7 @@ class VERSION:
 	#RELEASE_VERSION = u'2012.1'
 
 	## +=1 this if you changed the savegame "api"
-	SAVEGAMEREVISION = 61
+	SAVEGAMEREVISION = 62
 
 	@staticmethod
 	def string():
@@ -311,11 +311,11 @@ class COLORS:
 class VIEW:
 	ZOOM_MAX = 1
 	ZOOM_MIN = 0.25
+	ZOOM_DEFAULT = 1
 	ZOOM_LEVELS_FACTOR = 0.875
 	CELL_IMAGE_DIMENSIONS = (64, 32)
 	ROTATION = 45.0
 	TILT = -60
-	ZOOM = 1
 	MASK_IMAGE = 'content/gui/images/background/fow_mask.png'
 	CONCEAL_IMAGE = 'content/gui/images/background/fow_conceal.png'
 
@@ -356,6 +356,7 @@ class MESSAGES:
 # AI values read from the command line; use the values below unless overridden by the CLI or the GUI
 class AI:
 	HIGHLIGHT_PLANS = False # whether to show the AI players' plans on the map
+	HIGHLIGHT_COMBAT = False # whether to show the AI players' combat ranges around each unit
 	HUMAN_AI = False # whether the human player is controlled by the AI
 
 class TRADER: # check resource values: ./development/print_db_data.py res
