@@ -96,6 +96,7 @@ class BasicBuilding(ComponentHolder, ConcreteObject):
 		if self.owner and hasattr(self.owner, "is_local_player") and self.owner.is_local_player:
 			self._instance.setVisitor(True)
 			self._instance.setVisitorRadius(self.radius)
+			self._instance.setVisitorShape(fife.ITYPE_CIRCLE_SHAPE)
 			#HACK #TODO the following line is awesome
 			self.session.view.layers[LAYERS.FOG_OF_WAR].getCellCache().forceUpdate()
 
