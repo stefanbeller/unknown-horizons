@@ -227,6 +227,9 @@ class Production(ChangeListener):
 				self._pause_remaining_ticks = \
 						Scheduler().get_remaining_ticks(self, self._get_producing_callback())
 				Scheduler().rem_call(self, self._get_producing_callback())
+			elif self._pause_old_state == PRODUCTION.STATES.done:
+				# do we need to do something here, except preventing hitting the "else:" case?
+				pass
 			else:
 				assert False, 'Unhandled production state: %s' % self._pause_old_state
 
